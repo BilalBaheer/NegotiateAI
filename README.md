@@ -134,12 +134,7 @@ The project consists of two main components:
 - `GET /api/feedback` - Get all feedback for the current user (protected)
 - `GET /api/feedback/stats` - Get feedback statistics (protected)
 
-## Security Notes
 
-- Never commit `.env` files to version control
-- Generate new API keys if they are ever exposed
-- Use environment variables for sensitive information
-- The backend handles API key security to prevent exposure in the frontend
 
 ## Development
 

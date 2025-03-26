@@ -15,8 +15,12 @@ declare global {
 export const protect = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   let token;
 
-  // Check if token exists in headers
-  if (req.headers.authorization && req.headers.authorization.startsWith('Bearer')) {
+  // Check if token exists in cookies (new method)
+  if (req.cookies && req.cookies.token) {
+    token = req.cookies.token;
+  } 
+  // Fallback to Authorization header for API clients that don't support cookies
+  else if (req.headers.authorization && req.headers.authorization.startsWith('Bearer')) {
     token = req.headers.authorization.split(' ')[1];
   }
 
@@ -31,20 +35,20 @@ export const protect = async (req: Request, res: Response, next: NextFunction): 
 
   try {
     // Verify token
-    const decoded: any = jwt.verify(token, config.jwtSecret);
+    const decoded = jwt.verify(token, config.jwtSecret) as { id: string };
 
-    // Get user from database
+    // Get user from token
     const user = await User.findById(decoded.id).select('-password');
 
     if (!user) {
-      res.status(404).json({
+      res.status(401).json({
         success: false,
         message: 'User not found'
       });
       return;
     }
 
-    // Set user in request object
+    // Set user in request
     req.user = user;
     next();
   } catch (error) {
@@ -52,7 +56,6 @@ export const protect = async (req: Request, res: Response, next: NextFunction): 
       success: false,
       message: 'Not authorized to access this route'
     });
-    return;
   }
 };
 
@@ -65,6 +68,5 @@ export const admin = (req: Request, res: Response, next: NextFunction): void => 
       success: false,
       message: 'Not authorized as an admin'
     });
-    return;
   }
 };

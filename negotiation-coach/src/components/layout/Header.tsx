@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { 
   AppBar, 
   Toolbar, 
@@ -20,7 +20,8 @@ import DarkModeIcon from '@mui/icons-material/DarkMode';
 import { useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../../store';
-import { logout, updatePreferences } from '../../store/slices/userSlice';
+import { logout, updatePreferences, checkAuth } from '../../store/slices/userSlice';
+import { AppDispatch } from '../../store';
 
 interface UserState {
   isAuthenticated: boolean;
@@ -32,11 +33,16 @@ const Header: React.FC = () => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
   const navigate = useNavigate();
-  const dispatch = useDispatch();
+  const dispatch = useDispatch<AppDispatch>();
   const { isAuthenticated, user, preferences } = useSelector((state: RootState) => state.user as UserState);
   
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
+  
+  // Check authentication status on component mount
+  useEffect(() => {
+    dispatch(checkAuth());
+  }, [dispatch]);
   
   const handleMenuClick = (event: React.MouseEvent<HTMLButtonElement>) => {
     setAnchorEl(event.currentTarget);
@@ -51,8 +57,8 @@ const Header: React.FC = () => {
     handleClose();
   };
   
-  const handleLogout = () => {
-    dispatch(logout());
+  const handleLogout = async () => {
+    await dispatch(logout());
     navigate('/login');
     handleClose();
   };
@@ -119,86 +125,74 @@ const Header: React.FC = () => {
           {!isMobile ? (
             <>
               <Box sx={{ display: 'flex', alignItems: 'center', flexGrow: 1 }}>
-                <Button 
-                  color="inherit" 
-                  onClick={() => navigate('/')}
-                  sx={{ 
-                    mx: 1,
-                    fontWeight: 500,
-                    fontSize: '0.875rem',
-                    color: theme.palette.grey[300],
-                    '&:hover': {
-                      color: theme.palette.common.white,
-                      backgroundColor: 'transparent',
-                    }
-                  }}
-                >
-                  Home
-                </Button>
-                <Button 
-                  color="inherit" 
-                  onClick={() => navigate('/analysis')}
-                  sx={{ 
-                    mx: 1,
-                    fontWeight: 500,
-                    fontSize: '0.875rem',
-                    color: theme.palette.grey[300],
-                    '&:hover': {
-                      color: theme.palette.common.white,
-                      backgroundColor: 'transparent',
-                    }
-                  }}
-                >
-                  Analysis
-                </Button>
-                <Button 
-                  color="inherit" 
-                  onClick={() => navigate('/history')}
-                  sx={{ 
-                    mx: 1,
-                    fontWeight: 500,
-                    fontSize: '0.875rem',
-                    color: theme.palette.grey[300],
-                    '&:hover': {
-                      color: theme.palette.common.white,
-                      backgroundColor: 'transparent',
-                    }
-                  }}
-                >
-                  History
-                </Button>
-                <Button 
-                  color="inherit" 
-                  onClick={() => navigate('/feedback-stats')}
-                  sx={{ 
-                    mx: 1,
-                    fontWeight: 500,
-                    fontSize: '0.875rem',
-                    color: theme.palette.grey[300],
-                    '&:hover': {
-                      color: theme.palette.common.white,
-                      backgroundColor: 'transparent',
-                    }
-                  }}
-                >
-                  AI Learning
-                </Button>
-                <Button 
-                  color="inherit" 
-                  onClick={() => navigate('/pricing')}
-                  sx={{ 
-                    mx: 1,
-                    fontWeight: 500,
-                    fontSize: '0.875rem',
-                    color: theme.palette.grey[300],
-                    '&:hover': {
-                      color: theme.palette.common.white,
-                      backgroundColor: 'transparent',
-                    }
-                  }}
-                >
-                  Pricing
-                </Button>
+                {isAuthenticated && (
+                  <>
+                    <Button 
+                      color="inherit" 
+                      onClick={() => navigate('/')}
+                      sx={{ 
+                        mx: 1,
+                        fontWeight: 500,
+                        fontSize: '0.875rem',
+                        color: theme.palette.grey[300],
+                        '&:hover': {
+                          color: theme.palette.common.white,
+                          backgroundColor: 'transparent',
+                        }
+                      }}
+                    >
+                      Home
+                    </Button>
+                    <Button 
+                      color="inherit" 
+                      onClick={() => navigate('/analysis')}
+                      sx={{ 
+                        mx: 1,
+                        fontWeight: 500,
+                        fontSize: '0.875rem',
+                        color: theme.palette.grey[300],
+                        '&:hover': {
+                          color: theme.palette.common.white,
+                          backgroundColor: 'transparent',
+                        }
+                      }}
+                    >
+                      Analysis
+                    </Button>
+                    <Button 
+                      color="inherit" 
+                      onClick={() => navigate('/history')}
+                      sx={{ 
+                        mx: 1,
+                        fontWeight: 500,
+                        fontSize: '0.875rem',
+                        color: theme.palette.grey[300],
+                        '&:hover': {
+                          color: theme.palette.common.white,
+                          backgroundColor: 'transparent',
+                        }
+                      }}
+                    >
+                      History
+                    </Button>
+                    <Button 
+                      color="inherit" 
+                      onClick={() => navigate('/feedback-stats')}
+                      sx={{ 
+                        mx: 1,
+                        fontWeight: 500,
+                        fontSize: '0.875rem',
+                        color: theme.palette.grey[300],
+                        '&:hover': {
+                          color: theme.palette.common.white,
+                          backgroundColor: 'transparent',
+                        }
+                      }}
+                    >
+                      AI Learning
+                    </Button>
+                  </>
+                )}
               </Box>
               
               <Box sx={{ display: 'flex', alignItems: 'center' }}>
@@ -333,38 +327,32 @@ const Header: React.FC = () => {
                   }
                 }}
               >
-                <MenuItem 
-                  onClick={() => handleNavigation('/')}
-                  sx={{ py: 1.5, px: 2, borderRadius: 1 }}
-                >
-                  Home
-                </MenuItem>
-                <MenuItem 
-                  onClick={() => handleNavigation('/analysis')}
-                  sx={{ py: 1.5, px: 2, borderRadius: 1 }}
-                >
-                  Analysis
-                </MenuItem>
-                <MenuItem 
-                  onClick={() => handleNavigation('/history')}
-                  sx={{ py: 1.5, px: 2, borderRadius: 1 }}
-                >
-                  History
-                </MenuItem>
-                <MenuItem 
-                  onClick={() => handleNavigation('/feedback-stats')}
-                  sx={{ py: 1.5, px: 2, borderRadius: 1 }}
-                >
-                  AI Learning
-                </MenuItem>
-                <MenuItem 
-                  onClick={() => handleNavigation('/pricing')}
-                  sx={{ py: 1.5, px: 2, borderRadius: 1 }}
-                >
-                  Pricing
-                </MenuItem>
                 {isAuthenticated ? (
                   <>
+                    <MenuItem 
+                      onClick={() => handleNavigation('/')}
+                      sx={{ py: 1.5, px: 2, borderRadius: 1 }}
+                    >
+                      Home
+                    </MenuItem>
+                    <MenuItem 
+                      onClick={() => handleNavigation('/analysis')}
+                      sx={{ py: 1.5, px: 2, borderRadius: 1 }}
+                    >
+                      Analysis
+                    </MenuItem>
+                    <MenuItem 
+                      onClick={() => handleNavigation('/history')}
+                      sx={{ py: 1.5, px: 2, borderRadius: 1 }}
+                    >
+                      History
+                    </MenuItem>
+                    <MenuItem 
+                      onClick={() => handleNavigation('/feedback-stats')}
+                      sx={{ py: 1.5, px: 2, borderRadius: 1 }}
+                    >
+                      AI Learning
+                    </MenuItem>
                     <MenuItem 
                       onClick={() => handleNavigation('/profile')}
                       sx={{ py: 1.5, px: 2, borderRadius: 1 }}

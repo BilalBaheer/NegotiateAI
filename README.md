@@ -107,6 +107,30 @@ We've recently made significant security improvements to the authentication syst
 
 These enhancements significantly improve the application's security posture by addressing common web vulnerabilities and following security best practices for authentication systems.
 
+## API Endpoints
+
+### Authentication
+
+- `POST /api/users/register` - Register a new user
+- `POST /api/users/login` - Login and get JWT token
+- `POST /api/users/logout` - Logout and clear JWT cookie
+- `GET /api/users/profile` - Get user profile (protected)
+- `PUT /api/users/profile` - Update user profile (protected)
+
+### Analysis
+
+- `POST /api/analysis` - Create a new analysis (protected)
+- `GET /api/analysis` - Get all analyses for the current user (protected)
+- `GET /api/analysis/:id` - Get a specific analysis by ID (protected)
+- `DELETE /api/analysis/:id` - Delete an analysis (protected)
+- `POST /api/analysis/improve` - Get improved version of negotiation text (protected)
+
+### Feedback
+
+- `POST /api/feedback` - Submit feedback for an analysis (protected)
+- `GET /api/feedback` - Get all feedback for the current user (protected)
+- `GET /api/feedback/stats` - Get feedback statistics (protected)
+
 ## Development
 
 ### Backend
@@ -126,8 +150,6 @@ These enhancements significantly improve the application's security posture by a
 - API keys are stored only on the server side in environment variables
 - Passwords are hashed before storage in the database
 - MongoDB connection string includes credentials that should be kept secure
-
-
 
 ## Getting Started
 

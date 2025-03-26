@@ -169,6 +169,22 @@ const Header: React.FC = () => {
                 </Button>
                 <Button 
                   color="inherit" 
+                  onClick={() => navigate('/feedback-stats')}
+                  sx={{ 
+                    mx: 1,
+                    fontWeight: 500,
+                    fontSize: '0.875rem',
+                    color: theme.palette.grey[300],
+                    '&:hover': {
+                      color: theme.palette.common.white,
+                      backgroundColor: 'transparent',
+                    }
+                  }}
+                >
+                  AI Learning
+                </Button>
+                <Button 
+                  color="inherit" 
                   onClick={() => navigate('/pricing')}
                   sx={{ 
                     mx: 1,
@@ -334,6 +350,12 @@ const Header: React.FC = () => {
                   sx={{ py: 1.5, px: 2, borderRadius: 1 }}
                 >
                   History
+                </MenuItem>
+                <MenuItem 
+                  onClick={() => handleNavigation('/feedback-stats')}
+                  sx={{ py: 1.5, px: 2, borderRadius: 1 }}
+                >
+                  AI Learning
                 </MenuItem>
                 <MenuItem 
                   onClick={() => handleNavigation('/pricing')}

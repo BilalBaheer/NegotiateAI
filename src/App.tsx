@@ -5,6 +5,7 @@ import { store } from './store';
 import DashboardPage from './pages/DashboardPage';
 import AnalysisPage from './pages/AnalysisPage';
 import HistoryPage from './pages/HistoryPage';
+import FeedbackStatsPage from './pages/FeedbackStatsPage';
 import './App.css';
 
 function App() {
@@ -15,6 +16,7 @@ function App() {
           <Route path="/" element={<DashboardPage />} />
           <Route path="/analysis" element={<AnalysisPage />} />
           <Route path="/history" element={<HistoryPage />} />
+          <Route path="/feedback-stats" element={<FeedbackStatsPage />} />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </Router>

@@ -17,8 +17,12 @@ import {
   Paper,
   Chip,
   Alert,
-  Snackbar
+  Snackbar,
+  Accordion,
+  AccordionSummary,
+  AccordionDetails
 } from '@mui/material';
+import { ExpandMore as ExpandMoreIcon } from '@mui/icons-material';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../../store';
 import { 
@@ -31,6 +35,7 @@ import { AnalysisResult } from '../../services/aiService';
 import { industryModels } from '../../models/industryModels';
 import AnalysisResults from './AnalysisResults';
 import ComparativeAnalysis from './ComparativeAnalysis';
+import FeedbackForm from '../feedback/FeedbackForm';
 
 interface AnalysisState {
   currentText: string;
@@ -187,7 +192,29 @@ const TextAnalyzer: React.FC = () => {
           ) : (
             <>
               {analysisResult && !improvedText && (
-                <AnalysisResults result={analysisResult} />
+                <>
+                  <AnalysisResults result={analysisResult} />
+                  
+                  <Box sx={{ mt: 3 }}>
+                    <Accordion>
+                      <AccordionSummary
+                        expandIcon={<ExpandMoreIcon />}
+                        aria-controls="feedback-panel-content"
+                        id="feedback-panel-header"
+                      >
+                        <Typography>Rate this analysis</Typography>
+                      </AccordionSummary>
+                      <AccordionDetails>
+                        <FeedbackForm 
+                          analysisId={Date.now().toString()}
+                          modelId={selectedModelId}
+                          suggestionType="analysis"
+                          originalText={currentText}
+                        />
+                      </AccordionDetails>
+                    </Accordion>
+                  </Box>
+                </>
               )}
               
               {improvedText && (
@@ -224,6 +251,27 @@ const TextAnalyzer: React.FC = () => {
                     {comparativeAnalysis && (
                       <ComparativeAnalysis comparativeData={comparativeAnalysis} />
                     )}
+                    
+                    <Box sx={{ mt: 3 }}>
+                      <Accordion>
+                        <AccordionSummary
+                          expandIcon={<ExpandMoreIcon />}
+                          aria-controls="improvement-feedback-panel-content"
+                          id="improvement-feedback-panel-header"
+                        >
+                          <Typography>Rate this improvement</Typography>
+                        </AccordionSummary>
+                        <AccordionDetails>
+                          <FeedbackForm 
+                            analysisId={Date.now().toString()}
+                            modelId={selectedModelId}
+                            suggestionType="improvement"
+                            originalText={currentText}
+                            improvedText={improvedText}
+                          />
+                        </AccordionDetails>
+                      </Accordion>
+                    </Box>
                   </CardContent>
                 </Card>
               )}

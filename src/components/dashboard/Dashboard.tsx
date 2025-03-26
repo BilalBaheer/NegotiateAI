@@ -415,7 +415,164 @@ const Dashboard: React.FC = () => {
           </Grid>
         </Grid>
       </Container>
-      
+
+      {/* Feedback System Section */}
+      <Box sx={{ 
+        py: 10, 
+        background: 'linear-gradient(180deg, transparent, rgba(59, 130, 246, 0.05), transparent)',
+        mb: 10
+      }}>
+        <Container maxWidth="lg">
+          <Grid container spacing={6} alignItems="center">
+            <Grid item xs={12} md={6}>
+              <Box sx={{ pr: { md: 4 } }}>
+                <Typography 
+                  variant="h4" 
+                  component="h2" 
+                  sx={{ 
+                    mb: 2,
+                    fontWeight: 700,
+                  }}
+                >
+                  Help Our AI Learn & Improve
+                </Typography>
+                
+                <Typography 
+                  variant="body1" 
+                  sx={{ 
+                    mb: 3, 
+                    color: alpha(theme.palette.common.white, 0.7),
+                    fontSize: '1.05rem',
+                    lineHeight: 1.6
+                  }}
+                >
+                  Your feedback is invaluable to us. Every time you rate an AI suggestion, our system learns and becomes more effective at providing negotiation advice tailored to your needs.
+                </Typography>
+                
+                <Box sx={{ mb: 4 }}>
+                  <Stack spacing={2}>
+                    <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                      <CheckCircleOutlineOutlined color="primary" sx={{ mr: 2 }} />
+                      <Typography variant="body1">Rate analysis quality and accuracy</Typography>
+                    </Box>
+                    <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                      <CheckCircleOutlineOutlined color="primary" sx={{ mr: 2 }} />
+                      <Typography variant="body1">Provide feedback on text improvements</Typography>
+                    </Box>
+                    <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                      <CheckCircleOutlineOutlined color="primary" sx={{ mr: 2 }} />
+                      <Typography variant="body1">Help train industry-specific models</Typography>
+                    </Box>
+                  </Stack>
+                </Box>
+                
+                <Button 
+                  variant="outlined" 
+                  color="primary"
+                  size="large"
+                  onClick={() => navigate('/feedback-stats')}
+                  endIcon={<ArrowRightAltOutlined />}
+                  sx={{ 
+                    px: 3,
+                    py: 1.25,
+                    borderRadius: '10px',
+                    fontWeight: 500
+                  }}
+                >
+                  View AI Learning Dashboard
+                </Button>
+              </Box>
+            </Grid>
+            
+            <Grid item xs={12} md={6}>
+              <Paper 
+                elevation={6} 
+                sx={{ 
+                  p: 3, 
+                  borderRadius: 4,
+                  background: 'linear-gradient(135deg, rgba(30, 41, 59, 0.8), rgba(15, 23, 42, 0.8))',
+                  border: '1px solid rgba(255, 255, 255, 0.1)',
+                  boxShadow: '0 20px 40px rgba(0, 0, 0, 0.2)',
+                  overflow: 'hidden',
+                  position: 'relative'
+                }}
+              >
+                <Box 
+                  sx={{ 
+                    position: 'absolute',
+                    top: 0,
+                    left: 0,
+                    right: 0,
+                    bottom: 0,
+                    zIndex: 0,
+                    opacity: 0.1,
+                    background: 'radial-gradient(circle at 50% 50%, rgba(59, 130, 246, 0.5), transparent 70%)',
+                  }}
+                />
+                
+                <Box sx={{ position: 'relative', zIndex: 1 }}>
+                  <Typography variant="h6" gutterBottom fontWeight={600}>
+                    Rate this analysis
+                  </Typography>
+                  
+                  <Box sx={{ mb: 3, p: 2, bgcolor: 'rgba(15, 23, 42, 0.5)', borderRadius: 2 }}>
+                    <Typography variant="body2" sx={{ mb: 2, color: alpha(theme.palette.common.white, 0.7) }}>
+                      How would you rate the quality of this analysis?
+                    </Typography>
+                    
+                    <Stack direction="row" spacing={1} sx={{ mb: 3 }}>
+                      {[1, 2, 3, 4, 5].map((rating) => (
+                        <Button 
+                          key={rating}
+                          variant={rating === 5 ? "contained" : "outlined"}
+                          size="small"
+                          sx={{ 
+                            minWidth: '40px',
+                            borderRadius: '8px',
+                            color: rating === 5 ? 'white' : alpha(theme.palette.common.white, 0.7),
+                            borderColor: alpha(theme.palette.primary.main, 0.5)
+                          }}
+                        >
+                          {rating}
+                        </Button>
+                      ))}
+                    </Stack>
+                    
+                    <Typography variant="body2" sx={{ mb: 1, color: alpha(theme.palette.common.white, 0.7) }}>
+                      Additional comments (optional):
+                    </Typography>
+                    
+                    <Box 
+                      sx={{ 
+                        p: 2, 
+                        bgcolor: 'rgba(255, 255, 255, 0.05)', 
+                        borderRadius: 1,
+                        border: '1px dashed rgba(255, 255, 255, 0.2)',
+                        height: '80px',
+                        mb: 2
+                      }}
+                    />
+                    
+                    <Button 
+                      variant="contained" 
+                      color="primary"
+                      fullWidth
+                      sx={{ borderRadius: 2 }}
+                    >
+                      Submit Feedback
+                    </Button>
+                  </Box>
+                  
+                  <Typography variant="body2" sx={{ textAlign: 'center', color: alpha(theme.palette.common.white, 0.5) }}>
+                    Your feedback directly improves our AI models
+                  </Typography>
+                </Box>
+              </Paper>
+            </Grid>
+          </Grid>
+        </Container>
+      </Box>
+
       {/* How It Works Section */}
       <Box 
         sx={{ 
@@ -602,110 +759,6 @@ const Dashboard: React.FC = () => {
           </Box>
         </Container>
       </Box>
-      
-      {/* Recent Analyses Section - Removed as requested */}
-      {/* {recentAnalyses.length > 0 && (
-        <Container maxWidth="lg" sx={{ mb: 10 }}>
-          <Typography 
-            variant="h4" 
-            component="h2" 
-            sx={{ 
-              mb: 1.5,
-              fontWeight: 700,
-            }}
-          >
-            Recent Analyses
-          </Typography>
-          
-          <Typography 
-            variant="body1" 
-            sx={{ 
-              mb: 4, 
-              color: alpha(theme.palette.common.white, 0.7),
-            }}
-          >
-            Your most recent negotiation text analyses
-          </Typography>
-          
-          <Grid container spacing={3}>
-            {recentAnalyses.map((analysis) => (
-              <Grid item xs={12} md={6} lg={4} key={analysis.id}>
-                <Card 
-                  sx={{ 
-                    height: '100%',
-                    transition: 'transform 0.2s ease-in-out',
-                    '&:hover': {
-                      transform: 'translateY(-4px)',
-                      boxShadow: '0 8px 24px rgba(0, 0, 0, 0.15)'
-                    }
-                  }}
-                >
-                  <CardContent sx={{ p: 3 }}>
-                    <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 2 }}>
-                      <Typography variant="h6" component="h3" sx={{ fontWeight: 600 }}>
-                        {analysis.title}
-                      </Typography>
-                      <Box 
-                        sx={{ 
-                          px: 1.5, 
-                          py: 0.5, 
-                          borderRadius: '20px',
-                          bgcolor: alpha(theme.palette.primary.main, 0.15),
-                          color: theme.palette.primary.main,
-                          fontSize: '0.75rem',
-                          fontWeight: 600
-                        }}
-                      >
-                        Score: {analysis.score}/100
-                      </Box>
-                    </Box>
-                    
-                    <Typography variant="body2" sx={{ color: alpha(theme.palette.common.white, 0.7), mb: 2 }}>
-                      Industry: {analysis.industry}
-                    </Typography>
-                    
-                    <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                      <Typography variant="caption" sx={{ color: alpha(theme.palette.common.white, 0.5) }}>
-                        {analysis.date}
-                      </Typography>
-                      <Button 
-                        size="small" 
-                        color="primary"
-                        onClick={() => navigate(`/analysis/${analysis.id}`)}
-                        endIcon={<ArrowForwardOutlined fontSize="small" />}
-                      >
-                        View Details
-                      </Button>
-                    </Box>
-                  </CardContent>
-                </Card>
-              </Grid>
-            ))}
-          </Grid>
-          
-          {recentAnalyses.length > 0 && (
-            <Box sx={{ textAlign: 'center', mt: 4 }}>
-              <Button 
-                variant="outlined" 
-                color="primary"
-                onClick={() => navigate('/history')}
-                endIcon={<ArrowRightAltOutlined />}
-                sx={{ 
-                  px: 3,
-                  py: 1,
-                  borderColor: alpha(theme.palette.primary.main, 0.5),
-                  '&:hover': {
-                    borderColor: theme.palette.primary.main,
-                    backgroundColor: alpha(theme.palette.primary.main, 0.04),
-                  }
-                }}
-              >
-                View All History
-              </Button>
-            </Box>
-          )}
-        </Container>
-      )} */}
       
       {/* CTA Section */}
       <Box 

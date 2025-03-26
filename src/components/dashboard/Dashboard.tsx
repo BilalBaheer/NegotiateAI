@@ -28,6 +28,7 @@ import {
 import { useNavigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../store';
+import IntegrationSlider from './IntegrationSlider';
 
 interface RecentAnalysis {
   id: string;
@@ -415,7 +416,10 @@ const Dashboard: React.FC = () => {
           </Grid>
         </Grid>
       </Container>
-
+      
+      {/* Integration Slider Section */}
+      <IntegrationSlider />
+      
       {/* Feedback System Section */}
       <Box sx={{ 
         py: 10, 

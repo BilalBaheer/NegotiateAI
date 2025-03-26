@@ -2,346 +2,766 @@ import React from 'react';
 import { 
   Box, 
   Typography, 
+  Button, 
   Grid, 
   Card, 
   CardContent, 
-  Button, 
+  useTheme,
+  Container,
+  alpha,
+  Stack,
   Divider,
-  List,
-  ListItem,
-  ListItemText,
-  ListItemIcon,
-  Paper,
-  useTheme
+  Paper
 } from '@mui/material';
+import { 
+  MessageOutlined, 
+  HistoryOutlined, 
+  TipsAndUpdatesOutlined, 
+  AnalyticsOutlined,
+  ArrowForwardOutlined,
+  CheckCircleOutlineOutlined,
+  AutoGraphOutlined,
+  PsychologyOutlined,
+  ForumOutlined,
+  ArrowRightAltOutlined
+} from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../store';
-import ChatIcon from '@mui/icons-material/Chat';
-import HistoryIcon from '@mui/icons-material/History';
-import TrendingUpIcon from '@mui/icons-material/TrendingUp';
-import SchoolIcon from '@mui/icons-material/School';
-import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+
+interface RecentAnalysis {
+  id: string;
+  title: string;
+  date: string;
+  score: number;
+  industry: string;
+}
+
+// Map of model IDs to industry names for display
+const industryNames: Record<string, string> = {
+  general: 'General Business',
+  legal: 'Legal',
+  sales: 'Sales',
+  procurement: 'Procurement',
+  recruitment: 'Recruitment'
+};
 
 const Dashboard: React.FC = () => {
   const theme = useTheme();
   const navigate = useNavigate();
-  const { analysisHistory } = useSelector((state: RootState) => state.analysis);
-  const { user } = useSelector((state: RootState) => state.user);
   
-  const recentAnalyses = analysisHistory.slice(0, 3);
+  // Get analysis history and selected model ID from Redux store
+  const { analysisHistory = [], selectedModelId = 'general' } = useSelector((state: RootState) => state.analysis);
   
-  const features = [
-    {
-      title: 'AI-Powered Text Analysis',
-      description: 'Evaluates emails, chat transcripts, and documents for tone, sentiment, and persuasive strength.',
-      icon: <ChatIcon fontSize="large" color="primary" />
-    },
-    {
-      title: 'Negotiation Strength Scoring',
-      description: 'Provides scores based on best practices with actionable tips for improvement.',
-      icon: <TrendingUpIcon fontSize="large" color="primary" />
-    },
-    {
-      title: 'Industry-Specific Models',
-      description: 'Pre-trained models for legal, sales, procurement, and recruitment negotiations.',
-      icon: <SchoolIcon fontSize="large" color="primary" />
-    },
-    {
-      title: 'Secure Document Handling',
-      description: 'Enterprise-grade encryption for all your sensitive negotiation data.',
-      icon: <CheckCircleIcon fontSize="large" color="primary" />
-    }
-  ];
-  
+  // Transform the analysis history into the format we need for display
+  const recentAnalyses: RecentAnalysis[] = analysisHistory.slice(0, 3).map(analysis => {
+    return {
+      id: analysis.id || '',
+      title: analysis.text?.substring(0, 30) + '...' || 'Untitled Analysis',
+      date: new Date(analysis.date || Date.now()).toLocaleDateString(),
+      score: analysis.result?.score || 0,
+      // Use a default industry based on the current selected model
+      industry: industryNames[selectedModelId] || 'General Business'
+    };
+  });
+
   return (
-    <Box>
+    <Box sx={{ overflow: 'hidden' }}>
+      {/* Hero Section */}
       <Box 
         sx={{ 
-          p: 4, 
-          borderRadius: 2, 
-          mb: 4, 
-          background: `linear-gradient(45deg, ${theme.palette.primary.main} 30%, ${theme.palette.primary.light} 90%)`,
-          color: 'white'
+          py: { xs: 8, md: 12 },
+          px: { xs: 2, md: 4 },
+          borderRadius: 0,
+          position: 'relative',
+          overflow: 'hidden',
+          textAlign: 'center',
+          mb: 8
         }}
       >
-        <Typography variant="h4" fontWeight="bold" gutterBottom>
-          Welcome to NegotiateAI
-        </Typography>
-        <Typography variant="h6" sx={{ mb: 3, opacity: 0.9 }}>
-          Your AI-Driven Negotiation Coach & Language Optimizer
-        </Typography>
-        <Typography variant="body1" sx={{ maxWidth: '800px', mb: 3, opacity: 0.8 }}>
-          This isn't just software—it's a smart negotiation companion that continuously evolves with every interaction.
-          Get instant suggestions, data-driven insights, and powerful language optimization to improve your negotiation skills.
-        </Typography>
-        <Button 
-          variant="contained" 
-          size="large"
-          color="secondary"
-          onClick={() => navigate('/analysis')}
+        {/* Gradient background */}
+        <Box 
+          sx={{
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            zIndex: -1,
+            background: 'radial-gradient(circle at 50% 30%, rgba(59, 130, 246, 0.15), transparent 70%)',
+          }}
+        />
+
+        <Container maxWidth="md">
+          <Typography 
+            variant="h1" 
+            component="h1" 
+            sx={{ 
+              fontWeight: 800, 
+              mb: 3,
+              fontSize: { xs: '2.5rem', md: '3.5rem' },
+              background: 'linear-gradient(90deg, #60a5fa, #93c5fd)',
+              backgroundClip: 'text',
+              textFillColor: 'transparent',
+              WebkitBackgroundClip: 'text',
+              WebkitTextFillColor: 'transparent',
+            }}
+          >
+            AI-Powered Negotiation Coach
+          </Typography>
+          
+          <Typography 
+            variant="h6" 
+            component="p" 
+            sx={{ 
+              mb: 5, 
+              color: alpha(theme.palette.common.white, 0.8),
+              maxWidth: '700px',
+              mx: 'auto',
+              fontSize: { xs: '1rem', md: '1.25rem' },
+              lineHeight: 1.6
+            }}
+          >
+            Enhance your negotiation skills with advanced AI analysis. Get personalized feedback, 
+            improve your communication, and achieve better outcomes in any negotiation scenario.
+          </Typography>
+          
+          <Stack 
+            direction={{ xs: 'column', sm: 'row' }} 
+            spacing={2} 
+            justifyContent="center"
+            sx={{ mb: 6 }}
+          >
+            <Button 
+              variant="contained" 
+              color="primary" 
+              size="large"
+              onClick={() => navigate('/analysis')}
+              sx={{ 
+                px: 4, 
+                py: 1.5,
+                fontSize: '1rem',
+                borderRadius: '10px',
+                boxShadow: '0 0 20px rgba(96, 165, 250, 0.4)',
+                '&:hover': {
+                  boxShadow: '0 0 25px rgba(96, 165, 250, 0.5)',
+                }
+              }}
+              endIcon={<ArrowForwardOutlined />}
+            >
+              Analyze Text
+            </Button>
+            <Button 
+              variant="outlined" 
+              color="primary" 
+              size="large"
+              onClick={() => navigate('/history')}
+              sx={{ 
+                px: 4, 
+                py: 1.5,
+                fontSize: '1rem',
+                borderRadius: '10px',
+                borderColor: alpha(theme.palette.primary.main, 0.5),
+                '&:hover': {
+                  borderColor: theme.palette.primary.main,
+                  backgroundColor: alpha(theme.palette.primary.main, 0.04),
+                }
+              }}
+            >
+              View History
+            </Button>
+          </Stack>
+        </Container>
+      </Box>
+
+      {/* Features Section */}
+      <Container maxWidth="lg" sx={{ mb: 10 }}>
+        <Typography 
+          variant="h4" 
+          component="h2" 
           sx={{ 
-            px: 4, 
-            py: 1.5, 
-            fontWeight: 'bold',
-            backgroundColor: 'white',
-            color: theme.palette.primary.main,
-            '&:hover': {
-              backgroundColor: theme.palette.grey[100],
-            }
+            mb: 1.5,
+            fontWeight: 700,
+            textAlign: 'center',
           }}
         >
-          Start Analyzing Text
-        </Button>
+          Key Features
+        </Typography>
+        
+        <Typography 
+          variant="body1" 
+          sx={{ 
+            mb: 6, 
+            color: alpha(theme.palette.common.white, 0.7),
+            textAlign: 'center',
+            maxWidth: '700px',
+            mx: 'auto'
+          }}
+        >
+          Our AI-powered platform provides comprehensive tools to elevate your negotiation skills
+        </Typography>
+        
+        <Grid container spacing={4}>
+          <Grid item xs={12} md={6} lg={3}>
+            <Card 
+              sx={{ 
+                height: '100%',
+                transition: 'transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out',
+                '&:hover': {
+                  transform: 'translateY(-5px)',
+                  boxShadow: '0 10px 30px rgba(0, 0, 0, 0.2)'
+                }
+              }}
+            >
+              <CardContent sx={{ p: 3 }}>
+                <Box 
+                  sx={{ 
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    width: 60,
+                    height: 60,
+                    borderRadius: '12px',
+                    bgcolor: alpha(theme.palette.primary.main, 0.15),
+                    color: theme.palette.primary.main,
+                    mb: 2,
+                    mx: 'auto'
+                  }}
+                >
+                  <AnalyticsOutlined fontSize="large" />
+                </Box>
+                <Typography 
+                  variant="h6" 
+                  component="h3" 
+                  sx={{ 
+                    mb: 1.5,
+                    fontWeight: 600,
+                    textAlign: 'center'
+                  }}
+                >
+                  Text Analysis
+                </Typography>
+                <Typography 
+                  variant="body2" 
+                  sx={{ 
+                    color: alpha(theme.palette.common.white, 0.7),
+                    textAlign: 'center',
+                    mb: 2
+                  }}
+                >
+                  Get detailed analysis of your negotiation text with specific feedback on tone, clarity, and persuasiveness.
+                </Typography>
+              </CardContent>
+            </Card>
+          </Grid>
+          
+          <Grid item xs={12} md={6} lg={3}>
+            <Card 
+              sx={{ 
+                height: '100%',
+                transition: 'transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out',
+                '&:hover': {
+                  transform: 'translateY(-5px)',
+                  boxShadow: '0 10px 30px rgba(0, 0, 0, 0.2)'
+                }
+              }}
+            >
+              <CardContent sx={{ p: 3 }}>
+                <Box 
+                  sx={{ 
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    width: 60,
+                    height: 60,
+                    borderRadius: '12px',
+                    bgcolor: alpha(theme.palette.primary.main, 0.15),
+                    color: theme.palette.primary.main,
+                    mb: 2,
+                    mx: 'auto'
+                  }}
+                >
+                  <AutoGraphOutlined fontSize="large" />
+                </Box>
+                <Typography 
+                  variant="h6" 
+                  component="h3" 
+                  sx={{ 
+                    mb: 1.5,
+                    fontWeight: 600,
+                    textAlign: 'center'
+                  }}
+                >
+                  Performance Scoring
+                </Typography>
+                <Typography 
+                  variant="body2" 
+                  sx={{ 
+                    color: alpha(theme.palette.common.white, 0.7),
+                    textAlign: 'center',
+                    mb: 2
+                  }}
+                >
+                  Receive objective scoring on multiple dimensions of your negotiation approach and track improvements over time.
+                </Typography>
+              </CardContent>
+            </Card>
+          </Grid>
+          
+          <Grid item xs={12} md={6} lg={3}>
+            <Card 
+              sx={{ 
+                height: '100%',
+                transition: 'transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out',
+                '&:hover': {
+                  transform: 'translateY(-5px)',
+                  boxShadow: '0 10px 30px rgba(0, 0, 0, 0.2)'
+                }
+              }}
+            >
+              <CardContent sx={{ p: 3 }}>
+                <Box 
+                  sx={{ 
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    width: 60,
+                    height: 60,
+                    borderRadius: '12px',
+                    bgcolor: alpha(theme.palette.primary.main, 0.15),
+                    color: theme.palette.primary.main,
+                    mb: 2,
+                    mx: 'auto'
+                  }}
+                >
+                  <PsychologyOutlined fontSize="large" />
+                </Box>
+                <Typography 
+                  variant="h6" 
+                  component="h3" 
+                  sx={{ 
+                    mb: 1.5,
+                    fontWeight: 600,
+                    textAlign: 'center'
+                  }}
+                >
+                  AI Suggestions
+                </Typography>
+                <Typography 
+                  variant="body2" 
+                  sx={{ 
+                    color: alpha(theme.palette.common.white, 0.7),
+                    textAlign: 'center',
+                    mb: 2
+                  }}
+                >
+                  Get intelligent suggestions to improve your negotiation text, tailored to your specific industry and context.
+                </Typography>
+              </CardContent>
+            </Card>
+          </Grid>
+          
+          <Grid item xs={12} md={6} lg={3}>
+            <Card 
+              sx={{ 
+                height: '100%',
+                transition: 'transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out',
+                '&:hover': {
+                  transform: 'translateY(-5px)',
+                  boxShadow: '0 10px 30px rgba(0, 0, 0, 0.2)'
+                }
+              }}
+            >
+              <CardContent sx={{ p: 3 }}>
+                <Box 
+                  sx={{ 
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    width: 60,
+                    height: 60,
+                    borderRadius: '12px',
+                    bgcolor: alpha(theme.palette.primary.main, 0.15),
+                    color: theme.palette.primary.main,
+                    mb: 2,
+                    mx: 'auto'
+                  }}
+                >
+                  <ForumOutlined fontSize="large" />
+                </Box>
+                <Typography 
+                  variant="h6" 
+                  component="h3" 
+                  sx={{ 
+                    mb: 1.5,
+                    fontWeight: 600,
+                    textAlign: 'center'
+                  }}
+                >
+                  Industry Specific
+                </Typography>
+                <Typography 
+                  variant="body2" 
+                  sx={{ 
+                    color: alpha(theme.palette.common.white, 0.7),
+                    textAlign: 'center',
+                    mb: 2
+                  }}
+                >
+                  Customized analysis based on your industry, whether it's sales, legal, real estate, or business development.
+                </Typography>
+              </CardContent>
+            </Card>
+          </Grid>
+        </Grid>
+      </Container>
+      
+      {/* How It Works Section */}
+      <Box 
+        sx={{ 
+          py: 8, 
+          mb: 10,
+          background: 'linear-gradient(180deg, rgba(30, 41, 59, 0.5) 0%, rgba(15, 23, 42, 0) 100%)',
+        }}
+      >
+        <Container maxWidth="lg">
+          <Typography 
+            variant="h4" 
+            component="h2" 
+            sx={{ 
+              mb: 1.5,
+              fontWeight: 700,
+              textAlign: 'center',
+            }}
+          >
+            How It Works
+          </Typography>
+          
+          <Typography 
+            variant="body1" 
+            sx={{ 
+              mb: 6, 
+              color: alpha(theme.palette.common.white, 0.7),
+              textAlign: 'center',
+              maxWidth: '700px',
+              mx: 'auto'
+            }}
+          >
+            Three simple steps to improve your negotiation skills
+          </Typography>
+          
+          <Grid container spacing={4} alignItems="center">
+            <Grid item xs={12} md={4}>
+              <Paper 
+                elevation={0}
+                sx={{ 
+                  p: 3, 
+                  textAlign: 'center',
+                  backgroundColor: alpha(theme.palette.background.paper, 0.5),
+                  backdropFilter: 'blur(10px)',
+                  border: '1px solid rgba(255, 255, 255, 0.1)',
+                  borderRadius: '16px',
+                  height: '100%',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                }}
+              >
+                <Box 
+                  sx={{ 
+                    width: 48, 
+                    height: 48, 
+                    borderRadius: '50%', 
+                    bgcolor: alpha(theme.palette.primary.main, 0.15),
+                    color: theme.palette.primary.main,
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    mb: 2,
+                    fontSize: '1.25rem',
+                    fontWeight: 700
+                  }}
+                >
+                  1
+                </Box>
+                <Typography variant="h6" component="h3" sx={{ mb: 1.5, fontWeight: 600 }}>
+                  Input Your Text
+                </Typography>
+                <Typography variant="body2" sx={{ color: alpha(theme.palette.common.white, 0.7) }}>
+                  Enter your negotiation text or email draft into our system. Specify your industry for more targeted analysis.
+                </Typography>
+              </Paper>
+            </Grid>
+            
+            <Grid item xs={12} md={4}>
+              <Paper 
+                elevation={0}
+                sx={{ 
+                  p: 3, 
+                  textAlign: 'center',
+                  backgroundColor: alpha(theme.palette.background.paper, 0.5),
+                  backdropFilter: 'blur(10px)',
+                  border: '1px solid rgba(255, 255, 255, 0.1)',
+                  borderRadius: '16px',
+                  height: '100%',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                }}
+              >
+                <Box 
+                  sx={{ 
+                    width: 48, 
+                    height: 48, 
+                    borderRadius: '50%', 
+                    bgcolor: alpha(theme.palette.primary.main, 0.15),
+                    color: theme.palette.primary.main,
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    mb: 2,
+                    fontSize: '1.25rem',
+                    fontWeight: 700
+                  }}
+                >
+                  2
+                </Box>
+                <Typography variant="h6" component="h3" sx={{ mb: 1.5, fontWeight: 600 }}>
+                  Get AI Analysis
+                </Typography>
+                <Typography variant="body2" sx={{ color: alpha(theme.palette.common.white, 0.7) }}>
+                  Our AI analyzes your text for tone, clarity, persuasiveness, and negotiation strategy, providing a comprehensive score.
+                </Typography>
+              </Paper>
+            </Grid>
+            
+            <Grid item xs={12} md={4}>
+              <Paper 
+                elevation={0}
+                sx={{ 
+                  p: 3, 
+                  textAlign: 'center',
+                  backgroundColor: alpha(theme.palette.background.paper, 0.5),
+                  backdropFilter: 'blur(10px)',
+                  border: '1px solid rgba(255, 255, 255, 0.1)',
+                  borderRadius: '16px',
+                  height: '100%',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                }}
+              >
+                <Box 
+                  sx={{ 
+                    width: 48, 
+                    height: 48, 
+                    borderRadius: '50%', 
+                    bgcolor: alpha(theme.palette.primary.main, 0.15),
+                    color: theme.palette.primary.main,
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    mb: 2,
+                    fontSize: '1.25rem',
+                    fontWeight: 700
+                  }}
+                >
+                  3
+                </Box>
+                <Typography variant="h6" component="h3" sx={{ mb: 1.5, fontWeight: 600 }}>
+                  Improve & Implement
+                </Typography>
+                <Typography variant="body2" sx={{ color: alpha(theme.palette.common.white, 0.7) }}>
+                  Review AI suggestions to improve your text, implement changes, and track your progress over time.
+                </Typography>
+              </Paper>
+            </Grid>
+          </Grid>
+          
+          <Box sx={{ textAlign: 'center', mt: 5 }}>
+            <Button 
+              variant="outlined" 
+              color="primary"
+              onClick={() => navigate('/analysis')}
+              endIcon={<ArrowRightAltOutlined />}
+              sx={{ 
+                px: 3,
+                py: 1,
+                borderColor: alpha(theme.palette.primary.main, 0.5),
+                '&:hover': {
+                  borderColor: theme.palette.primary.main,
+                  backgroundColor: alpha(theme.palette.primary.main, 0.04),
+                }
+              }}
+            >
+              Try It Now
+            </Button>
+          </Box>
+        </Container>
       </Box>
       
-      <Grid container spacing={4}>
-        <Grid item xs={12} md={8}>
-          <Typography variant="h5" fontWeight="bold" gutterBottom>
-            Key Features
+      {/* Recent Analyses Section */}
+      {recentAnalyses.length > 0 && (
+        <Container maxWidth="lg" sx={{ mb: 10 }}>
+          <Typography 
+            variant="h4" 
+            component="h2" 
+            sx={{ 
+              mb: 1.5,
+              fontWeight: 700,
+            }}
+          >
+            Recent Analyses
           </Typography>
+          
+          <Typography 
+            variant="body1" 
+            sx={{ 
+              mb: 4, 
+              color: alpha(theme.palette.common.white, 0.7),
+            }}
+          >
+            Your most recent negotiation text analyses
+          </Typography>
+          
           <Grid container spacing={3}>
-            {features.map((feature, index) => (
-              <Grid item xs={12} sm={6} key={index}>
+            {recentAnalyses.map((analysis) => (
+              <Grid item xs={12} md={6} lg={4} key={analysis.id}>
                 <Card 
-                  elevation={2} 
                   sx={{ 
                     height: '100%',
-                    transition: 'transform 0.2s',
+                    transition: 'transform 0.2s ease-in-out',
                     '&:hover': {
                       transform: 'translateY(-4px)',
+                      boxShadow: '0 8px 24px rgba(0, 0, 0, 0.15)'
                     }
                   }}
                 >
-                  <CardContent>
-                    <Box sx={{ display: 'flex', mb: 2 }}>
-                      {feature.icon}
+                  <CardContent sx={{ p: 3 }}>
+                    <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 2 }}>
+                      <Typography variant="h6" component="h3" sx={{ fontWeight: 600 }}>
+                        {analysis.title}
+                      </Typography>
+                      <Box 
+                        sx={{ 
+                          px: 1.5, 
+                          py: 0.5, 
+                          borderRadius: '20px',
+                          bgcolor: alpha(theme.palette.primary.main, 0.15),
+                          color: theme.palette.primary.main,
+                          fontSize: '0.75rem',
+                          fontWeight: 600
+                        }}
+                      >
+                        Score: {analysis.score}/100
+                      </Box>
                     </Box>
-                    <Typography variant="h6" gutterBottom>
-                      {feature.title}
+                    
+                    <Typography variant="body2" sx={{ color: alpha(theme.palette.common.white, 0.7), mb: 2 }}>
+                      Industry: {analysis.industry}
                     </Typography>
-                    <Typography variant="body2" color="text.secondary">
-                      {feature.description}
-                    </Typography>
+                    
+                    <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                      <Typography variant="caption" sx={{ color: alpha(theme.palette.common.white, 0.5) }}>
+                        {analysis.date}
+                      </Typography>
+                      <Button 
+                        size="small" 
+                        color="primary"
+                        onClick={() => navigate(`/analysis/${analysis.id}`)}
+                        endIcon={<ArrowForwardOutlined fontSize="small" />}
+                      >
+                        View Details
+                      </Button>
+                    </Box>
                   </CardContent>
                 </Card>
               </Grid>
             ))}
           </Grid>
           
-          <Box sx={{ mt: 4 }}>
-            <Typography variant="h5" fontWeight="bold" gutterBottom>
-              How It Works
-            </Typography>
-            <Paper elevation={2} sx={{ p: 3 }}>
-              <List>
-                <ListItem>
-                  <ListItemIcon>
-                    <Box 
-                      sx={{ 
-                        width: 28, 
-                        height: 28, 
-                        borderRadius: '50%', 
-                        bgcolor: theme.palette.primary.main,
-                        color: 'white',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        fontWeight: 'bold'
-                      }}
-                    >
-                      1
-                    </Box>
-                  </ListItemIcon>
-                  <ListItemText 
-                    primary="Input Your Negotiation Text" 
-                    secondary="Paste your emails, chat messages, or draft documents into our analyzer."
-                  />
-                </ListItem>
-                <ListItem>
-                  <ListItemIcon>
-                    <Box 
-                      sx={{ 
-                        width: 28, 
-                        height: 28, 
-                        borderRadius: '50%', 
-                        bgcolor: theme.palette.primary.main,
-                        color: 'white',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        fontWeight: 'bold'
-                      }}
-                    >
-                      2
-                    </Box>
-                  </ListItemIcon>
-                  <ListItemText 
-                    primary="Receive AI Analysis" 
-                    secondary="Our AI evaluates tone, sentiment, persuasiveness, and provides a comprehensive score."
-                  />
-                </ListItem>
-                <ListItem>
-                  <ListItemIcon>
-                    <Box 
-                      sx={{ 
-                        width: 28, 
-                        height: 28, 
-                        borderRadius: '50%', 
-                        bgcolor: theme.palette.primary.main,
-                        color: 'white',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        fontWeight: 'bold'
-                      }}
-                    >
-                      3
-                    </Box>
-                  </ListItemIcon>
-                  <ListItemText 
-                    primary="Get Actionable Suggestions" 
-                    secondary="Review strengths, weaknesses, and specific suggestions to improve your negotiation text."
-                  />
-                </ListItem>
-                <ListItem>
-                  <ListItemIcon>
-                    <Box 
-                      sx={{ 
-                        width: 28, 
-                        height: 28, 
-                        borderRadius: '50%', 
-                        bgcolor: theme.palette.primary.main,
-                        color: 'white',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        fontWeight: 'bold'
-                      }}
-                    >
-                      4
-                    </Box>
-                  </ListItemIcon>
-                  <ListItemText 
-                    primary="Optimize Your Language" 
-                    secondary="Use our AI to rewrite and improve your text for maximum negotiation effectiveness."
-                  />
-                </ListItem>
-              </List>
-              <Box sx={{ mt: 2, textAlign: 'center' }}>
-                <Button 
-                  variant="contained" 
-                  color="primary"
-                  onClick={() => navigate('/analysis')}
-                  sx={{ px: 4 }}
-                >
-                  Try It Now
-                </Button>
-              </Box>
-            </Paper>
-          </Box>
-        </Grid>
-        
-        <Grid item xs={12} md={4}>
-          <Card elevation={2}>
-            <CardContent>
-              <Typography variant="h6" gutterBottom>
-                Getting Started
-              </Typography>
-              <Typography variant="body2" paragraph>
-                New to NegotiateAI? Follow these steps to get the most out of your AI negotiation coach:
-              </Typography>
-              <List dense>
-                <ListItem disableGutters>
-                  <ListItemIcon sx={{ minWidth: 36 }}>
-                    <CheckCircleIcon color="primary" fontSize="small" />
-                  </ListItemIcon>
-                  <ListItemText primary="Analyze your first negotiation text" />
-                </ListItem>
-                <ListItem disableGutters>
-                  <ListItemIcon sx={{ minWidth: 36 }}>
-                    <CheckCircleIcon color="primary" fontSize="small" />
-                  </ListItemIcon>
-                  <ListItemText primary="Review your strengths and areas for improvement" />
-                </ListItem>
-                <ListItem disableGutters>
-                  <ListItemIcon sx={{ minWidth: 36 }}>
-                    <CheckCircleIcon color="primary" fontSize="small" />
-                  </ListItemIcon>
-                  <ListItemText primary="Try different industry models for specialized feedback" />
-                </ListItem>
-                <ListItem disableGutters>
-                  <ListItemIcon sx={{ minWidth: 36 }}>
-                    <CheckCircleIcon color="primary" fontSize="small" />
-                  </ListItemIcon>
-                  <ListItemText primary="Use the AI to improve your text" />
-                </ListItem>
-              </List>
+          {recentAnalyses.length > 0 && (
+            <Box sx={{ textAlign: 'center', mt: 4 }}>
               <Button 
                 variant="outlined" 
-                fullWidth 
-                sx={{ mt: 2 }}
-                onClick={() => navigate('/analysis')}
+                color="primary"
+                onClick={() => navigate('/history')}
+                endIcon={<ArrowRightAltOutlined />}
+                sx={{ 
+                  px: 3,
+                  py: 1,
+                  borderColor: alpha(theme.palette.primary.main, 0.5),
+                  '&:hover': {
+                    borderColor: theme.palette.primary.main,
+                    backgroundColor: alpha(theme.palette.primary.main, 0.04),
+                  }
+                }}
               >
-                Start Now
+                View All History
               </Button>
-            </CardContent>
-          </Card>
-          
-          {recentAnalyses.length > 0 && (
-            <Card elevation={2} sx={{ mt: 3 }}>
-              <CardContent>
-                <Typography variant="h6" gutterBottom>
-                  Recent Analyses
-                </Typography>
-                <List disablePadding>
-                  {recentAnalyses.map((analysis, index) => (
-                    <React.Fragment key={analysis.id}>
-                      <ListItem disableGutters sx={{ px: 0 }}>
-                        <ListItemIcon sx={{ minWidth: 36 }}>
-                          <HistoryIcon fontSize="small" />
-                        </ListItemIcon>
-                        <ListItemText 
-                          primary={analysis.text.substring(0, 40) + '...'}
-                          secondary={new Date(analysis.date).toLocaleDateString()}
-                        />
-                        <Box 
-                          sx={{ 
-                            ml: 1, 
-                            bgcolor: 
-                              analysis.result.score >= 80 ? 'success.main' : 
-                              analysis.result.score >= 60 ? 'warning.main' : 
-                              'error.main',
-                            color: 'white',
-                            px: 1,
-                            py: 0.5,
-                            borderRadius: 1,
-                            fontSize: '0.75rem',
-                            fontWeight: 'bold'
-                          }}
-                        >
-                          {analysis.result.score}
-                        </Box>
-                      </ListItem>
-                      {index < recentAnalyses.length - 1 && <Divider component="li" />}
-                    </React.Fragment>
-                  ))}
-                </List>
-                {recentAnalyses.length > 0 && (
-                  <Button 
-                    variant="text" 
-                    fullWidth 
-                    sx={{ mt: 2 }}
-                    onClick={() => navigate('/history')}
-                  >
-                    View All History
-                  </Button>
-                )}
-              </CardContent>
-            </Card>
+            </Box>
           )}
-        </Grid>
-      </Grid>
+        </Container>
+      )}
+      
+      {/* CTA Section */}
+      <Box 
+        sx={{ 
+          py: 8, 
+          mb: 6,
+          background: 'linear-gradient(180deg, rgba(59, 130, 246, 0.1) 0%, rgba(15, 23, 42, 0) 100%)',
+          borderRadius: '24px',
+          mx: 4
+        }}
+      >
+        <Container maxWidth="md" sx={{ textAlign: 'center' }}>
+          <Typography 
+            variant="h4" 
+            component="h2" 
+            sx={{ 
+              mb: 2,
+              fontWeight: 700,
+            }}
+          >
+            Ready to Improve Your Negotiation Skills?
+          </Typography>
+          
+          <Typography 
+            variant="body1" 
+            sx={{ 
+              mb: 4, 
+              color: alpha(theme.palette.common.white, 0.7),
+              maxWidth: '700px',
+              mx: 'auto'
+            }}
+          >
+            Start analyzing your negotiation texts today and see immediate improvements in your communication effectiveness.
+          </Typography>
+          
+          <Button 
+            variant="contained" 
+            color="primary" 
+            size="large"
+            onClick={() => navigate('/analysis')}
+            sx={{ 
+              px: 4, 
+              py: 1.5,
+              fontSize: '1rem',
+              borderRadius: '10px',
+              boxShadow: '0 0 20px rgba(96, 165, 250, 0.4)',
+              '&:hover': {
+                boxShadow: '0 0 25px rgba(96, 165, 250, 0.5)',
+              }
+            }}
+            endIcon={<ArrowForwardOutlined />}
+          >
+            Start Analyzing
+          </Button>
+        </Container>
+      </Box>
     </Box>
   );
 };

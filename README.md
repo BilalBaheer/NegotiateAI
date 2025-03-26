@@ -106,7 +106,7 @@ negotiation-coach/
 └── package.json            # Dependencies
 ```
 
-## Future Enhancements
+## Future Impreovements
 
 - **Backend Integration**: Replace localStorage with a backend service for storing and retrieving feedback data.
 - **User Authentication**: Implement user authentication to secure the feedback submission process.

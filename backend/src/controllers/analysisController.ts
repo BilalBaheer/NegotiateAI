@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 import Analysis from '../models/Analysis';
-import { analyzeText, getImprovedText } from '../services/aiService';
+import aiService from '../services/aiService';
 
 /**
  * Analyze negotiation text
@@ -9,35 +9,38 @@ import { analyzeText, getImprovedText } from '../services/aiService';
  */
 export const createAnalysis = async (req: Request, res: Response): Promise<void> => {
   try {
-    const { text, modelId } = req.body;
+    const { text, industryModelId } = req.body;
+    const userId = req.user?._id;
 
-    if (!text || !modelId) {
+    if (!text || !userId) {
       res.status(400).json({
         success: false,
-        message: 'Text and modelId are required'
+        message: 'Please provide text for analysis and ensure you are logged in'
       });
       return;
     }
 
     // Call AI service to analyze text
-    const analysisResult = await analyzeText(text, modelId);
+    const analysisResult = await aiService.analyzeText(text, industryModelId || 'general');
 
-    // Create new analysis in database
+    // Create and save the analysis
     const analysis = await Analysis.create({
-      userId: req.user._id,
-      originalText: text,
-      modelId,
-      ...analysisResult
+      user: userId,
+      text,
+      industryModelId: industryModelId || 'general',
+      results: analysisResult,
+      createdAt: new Date()
     });
 
     res.status(201).json({
       success: true,
-      analysis
+      data: analysis
     });
   } catch (error: any) {
     res.status(500).json({
       success: false,
-      message: error.message || 'Server Error'
+      message: 'Failed to analyze text',
+      error: error.message
     });
   }
 };
@@ -49,36 +52,32 @@ export const createAnalysis = async (req: Request, res: Response): Promise<void>
  */
 export const improveText = async (req: Request, res: Response): Promise<void> => {
   try {
-    const { text, modelId, analysisId } = req.body;
+    const { text, industryModelId } = req.body;
+    const userId = req.user?._id;
 
-    if (!text || !modelId) {
+    if (!text || !userId) {
       res.status(400).json({
         success: false,
-        message: 'Text and modelId are required'
+        message: 'Please provide text to improve and ensure you are logged in'
       });
       return;
     }
 
     // Call AI service to get improved text
-    const improvedText = await getImprovedText(text, modelId);
+    const improvedText = await aiService.getImprovedText(text, industryModelId || 'general');
 
-    // If analysisId is provided, update the analysis with improved text
-    if (analysisId) {
-      await Analysis.findByIdAndUpdate(
-        analysisId,
-        { improvedText },
-        { new: true }
-      );
-    }
-
-    res.json({
+    res.status(200).json({
       success: true,
-      improvedText
+      data: {
+        originalText: text,
+        improvedText
+      }
     });
   } catch (error: any) {
     res.status(500).json({
       success: false,
-      message: error.message || 'Server Error'
+      message: 'Failed to improve text',
+      error: error.message
     });
   }
 };
@@ -90,18 +89,20 @@ export const improveText = async (req: Request, res: Response): Promise<void> =>
  */
 export const getAnalyses = async (req: Request, res: Response): Promise<void> => {
   try {
-    const analyses = await Analysis.find({ userId: req.user._id })
-      .sort({ createdAt: -1 });
+    const userId = req.user?._id;
 
-    res.json({
+    const analyses = await Analysis.find({ user: userId }).sort({ createdAt: -1 });
+
+    res.status(200).json({
       success: true,
       count: analyses.length,
-      analyses
+      data: analyses
     });
   } catch (error: any) {
     res.status(500).json({
       success: false,
-      message: error.message || 'Server Error'
+      message: 'Failed to fetch analyses',
+      error: error.message
     });
   }
 };
@@ -113,7 +114,10 @@ export const getAnalyses = async (req: Request, res: Response): Promise<void> =>
  */
 export const getAnalysisById = async (req: Request, res: Response): Promise<void> => {
   try {
-    const analysis = await Analysis.findById(req.params.id);
+    const analysisId = req.params.id;
+    const userId = req.user?._id;
+
+    const analysis = await Analysis.findById(analysisId);
 
     if (!analysis) {
       res.status(404).json({
@@ -123,8 +127,8 @@ export const getAnalysisById = async (req: Request, res: Response): Promise<void
       return;
     }
 
-    // Check if the analysis belongs to the user
-    if (analysis.userId.toString() !== req.user._id.toString()) {
+    // Ensure the user owns this analysis
+    if (analysis.user.toString() !== userId?.toString()) {
       res.status(403).json({
         success: false,
         message: 'Not authorized to access this analysis'
@@ -132,14 +136,15 @@ export const getAnalysisById = async (req: Request, res: Response): Promise<void
       return;
     }
 
-    res.json({
+    res.status(200).json({
       success: true,
-      analysis
+      data: analysis
     });
   } catch (error: any) {
     res.status(500).json({
       success: false,
-      message: error.message || 'Server Error'
+      message: 'Failed to fetch analysis',
+      error: error.message
     });
   }
 };
@@ -151,7 +156,10 @@ export const getAnalysisById = async (req: Request, res: Response): Promise<void
  */
 export const deleteAnalysis = async (req: Request, res: Response): Promise<void> => {
   try {
-    const analysis = await Analysis.findById(req.params.id);
+    const analysisId = req.params.id;
+    const userId = req.user?._id;
+
+    const analysis = await Analysis.findById(analysisId);
 
     if (!analysis) {
       res.status(404).json({
@@ -161,8 +169,8 @@ export const deleteAnalysis = async (req: Request, res: Response): Promise<void>
       return;
     }
 
-    // Check if the analysis belongs to the user
-    if (analysis.userId.toString() !== req.user._id.toString()) {
+    // Ensure the user owns this analysis
+    if (analysis.user.toString() !== userId?.toString()) {
       res.status(403).json({
         success: false,
         message: 'Not authorized to delete this analysis'
@@ -172,14 +180,15 @@ export const deleteAnalysis = async (req: Request, res: Response): Promise<void>
 
     await analysis.deleteOne();
 
-    res.json({
+    res.status(200).json({
       success: true,
       message: 'Analysis deleted successfully'
     });
   } catch (error: any) {
     res.status(500).json({
       success: false,
-      message: error.message || 'Server Error'
+      message: 'Failed to delete analysis',
+      error: error.message
     });
   }
 };

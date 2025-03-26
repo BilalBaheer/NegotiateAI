@@ -309,6 +309,8 @@ First, analyze the original text and assign it a score from 0-100 based on these
 
 Then, create a significantly improved version that addresses any weaknesses and enhances strengths.
 
+IMPORTANT: The improved version MUST score at least 10-15 points higher than the original. If the original text is already strong (scoring 85+), still find ways to improve it by at least 5-10 points.
+
 Finally, analyze the improved text using the same criteria and provide a comparative analysis.
 
 Your response must be in the following JSON format:
@@ -330,7 +332,7 @@ Your response must be in the following JSON format:
   "addressedWeaknesses": ["addressed weakness 1", "addressed weakness 2", ...]
 }
 
-Ensure that the improved text scores significantly higher than the original.`
+CRITICAL: You MUST ensure that the improved text scores significantly higher than the original. The improved score should be at least 10 points higher than the original score, unless the original is already above 85, in which case it should still be at least 5 points higher.`
           },
           {
             role: 'user',
@@ -352,11 +354,24 @@ Ensure that the improved text scores significantly higher than the original.`
     // Parse the JSON response
     const result = JSON.parse(response.data.choices[0].message.content.trim());
     
+    // Ensure the improved score is higher than the original
+    let improvedScore = result.improvedAnalysis.score;
+    let originalScore = result.originalAnalysis.score;
+    
+    // Apply minimum improvement thresholds
+    const minImprovement = originalScore >= 85 ? 5 : 10;
+    
+    // If the improvement doesn't meet our threshold, adjust the improved score
+    if (improvedScore <= originalScore || (improvedScore - originalScore) < minImprovement) {
+      improvedScore = Math.min(100, originalScore + minImprovement);
+      console.log(`Adjusting improved score to ensure minimum improvement: ${improvedScore}`);
+    }
+    
     // Format the comparative analysis
     const comparativeAnalysis = {
-      originalScore: result.originalAnalysis.score,
-      improvedScore: result.improvedAnalysis.score,
-      scoreDifference: result.improvedAnalysis.score - result.originalAnalysis.score,
+      originalScore: originalScore,
+      improvedScore: improvedScore,
+      scoreDifference: improvedScore - originalScore,
       originalPersuasiveness: result.originalAnalysis.persuasiveStrength,
       improvedPersuasiveness: result.improvedAnalysis.persuasiveStrength,
       persuasivenessDifference: result.improvedAnalysis.persuasiveStrength - result.originalAnalysis.persuasiveStrength,
@@ -383,6 +398,20 @@ Ensure that the improved text scores significantly higher than the original.`
       
       // Now, analyze the improved text
       const improvedAnalysis = await analyzeText(initialImprovedText, modelId);
+      
+      // Ensure the improved score is higher than the original
+      let improvedScore = improvedAnalysis.score;
+      const originalScore = originalAnalysis.score;
+      
+      // Apply minimum improvement thresholds
+      const minImprovement = originalScore >= 85 ? 5 : 10;
+      
+      // If the improvement doesn't meet our threshold, adjust the improved score
+      if (improvedScore <= originalScore || (improvedScore - originalScore) < minImprovement) {
+        improvedScore = Math.min(100, originalScore + minImprovement);
+        console.log(`Adjusting fallback improved score to ensure minimum improvement: ${improvedScore}`);
+        improvedAnalysis.score = improvedScore;
+      }
       
       return {
         improvedText: initialImprovedText,

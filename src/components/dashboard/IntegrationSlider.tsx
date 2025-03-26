@@ -172,24 +172,18 @@ const IntegrationSlider: React.FC = () => {
                     backdropFilter: 'blur(4px)',
                   }}
                 >
-                  {/* Use a placeholder colored box until we have actual logos */}
+                  {/* Use actual logo images instead of placeholder boxes */}
                   <Box
+                    component="img"
+                    src={integration.logo}
+                    alt={`${integration.name} logo`}
                     sx={{
                       width: '100%',
                       height: '100%',
-                      borderRadius: '8px',
-                      background: `linear-gradient(135deg, ${alpha(theme.palette.primary.main, 0.2)}, ${alpha(theme.palette.primary.dark, 0.4)})`,
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      color: alpha(theme.palette.common.white, 0.9),
-                      fontSize: '14px',
-                      fontWeight: 'bold',
-                      letterSpacing: '1px',
+                      objectFit: 'contain',
+                      transition: 'all 0.3s ease',
                     }}
-                  >
-                    {integration.name.substring(0, 2).toUpperCase()}
-                  </Box>
+                  />
                 </Box>
                 <Typography
                   className="logo-text"

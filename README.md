@@ -1,46 +1,115 @@
-# Getting Started with Create React App
+# AI Negotiation Coach
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+![AI Negotiation Coach](public/logo192.png)
 
-## Available Scripts
+## Overview
 
-In the project directory, you can run:
+AI Negotiation Coach is an advanced web application designed to help users improve their negotiation skills through AI-powered text analysis. The application provides detailed feedback, scoring, and suggestions to enhance negotiation communications across various industries.
 
-### `npm start`
+## Features
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+- **AI-Powered Text Analysis**: Get comprehensive analysis of your negotiation text with specific feedback on tone, clarity, and persuasiveness.
+- **Performance Scoring**: Receive objective scoring on multiple dimensions of your negotiation approach and track improvements over time.
+- **AI Suggestions**: Get intelligent suggestions to improve your negotiation text, tailored to your specific industry and context.
+- **Industry-Specific Models**: Customized analysis based on your industry, whether it's sales, legal, real estate, or business development.
+- **Secure Processing**: Enterprise-grade security for all your negotiation data with secure API integration.
+- **Modern UI**: Sleek, dark-themed interface with intuitive navigation and responsive design.
 
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
+## Technology Stack
 
-### `npm test`
+- **Frontend**: React, TypeScript, Material-UI
+- **State Management**: Redux Toolkit
+- **API Integration**: OpenAI API for text analysis
+- **Styling**: Material-UI theming with custom dark mode
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+## Getting Started
 
-### `npm run build`
+### Prerequisites
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+- Node.js (v14.0.0 or higher)
+- npm (v6.0.0 or higher)
+- OpenAI API key
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+### Installation
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+1. Clone the repository:
+   ```
+   git clone https://github.com/BilalBaheer/NegotiateAI.git
+   cd negotiation-coach
+   ```
 
-### `npm run eject`
+2. Install dependencies:
+   ```
+   npm install
+   ```
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
+3. Create a `.env` file in the root directory and add your OpenAI API key:
+   ```
+   REACT_APP_OPENAI_API_KEY=your_openai_api_key_here
+   ```
 
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+4. Start the development server:
+   ```
+   npm start
+   ```
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
+5. Open [http://localhost:3000](http://localhost:3000) to view the application in your browser.
 
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
+## Usage
 
-## Learn More
+1. **Analyze Text**: Navigate to the Analysis page and enter your negotiation text.
+2. **Select Industry**: Choose the industry that best matches your negotiation context.
+3. **Get Analysis**: Submit your text to receive a detailed analysis with scores and suggestions.
+4. **Improve Text**: Review the AI-generated suggestions and implement improvements.
+5. **Track Progress**: View your history to track improvement over time.
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+## Project Structure
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+```
+negotiation-coach/
+├── public/                 # Public assets
+├── src/
+│   ├── components/         # React components
+│   │   ├── analysis/       # Analysis-related components
+│   │   ├── dashboard/      # Dashboard components
+│   │   └── layout/         # Layout components
+│   ├── models/             # Industry models
+│   ├── pages/              # Page components
+│   ├── services/           # API services
+│   ├── store/              # Redux store
+│   │   └── slices/         # Redux slices
+│   ├── theme.ts            # Theme configuration
+│   └── index.tsx           # Application entry point
+├── .env                    # Environment variables
+└── package.json            # Dependencies
+```
+
+## Deployment
+
+To build the application for production:
+
+```
+npm run build
+```
+
+This creates a `build` folder with optimized production files that can be deployed to any static hosting service.
+
+## Contributing
+
+Contributions are welcome! Please feel free to submit a Pull Request.
+
+1. Fork the repository
+2. Create your feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add some amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
+
+## License
+
+This project is licensed under the MIT License - see the LICENSE file for details.
+
+## Acknowledgments
+
+- OpenAI for providing the powerful API that drives our text analysis
+- Material-UI for the comprehensive component library
+- All contributors who have helped improve this application

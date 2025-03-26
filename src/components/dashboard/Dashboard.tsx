@@ -603,8 +603,8 @@ const Dashboard: React.FC = () => {
         </Container>
       </Box>
       
-      {/* Recent Analyses Section */}
-      {recentAnalyses.length > 0 && (
+      {/* Recent Analyses Section - Removed as requested */}
+      {/* {recentAnalyses.length > 0 && (
         <Container maxWidth="lg" sx={{ mb: 10 }}>
           <Typography 
             variant="h4" 
@@ -705,7 +705,7 @@ const Dashboard: React.FC = () => {
             </Box>
           )}
         </Container>
-      )}
+      )} */}
       
       {/* CTA Section */}
       <Box 

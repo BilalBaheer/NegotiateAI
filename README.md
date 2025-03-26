@@ -1,6 +1,6 @@
 # NegotiateAI - AI-Powered Negotiation Coach
 
-NegotiateAI is an application designed to help users improve their negotiation skills through AI-powered analysis and feedback. The application analyzes negotiation text, provides feedback, and offers improved versions of negotiation messages.
+NegotiateAI is an advanced web application designed to help users improve their negotiation skills through AI-powered analysis and feedback. The application analyzes negotiation text, provides feedback, and offers improved versions of negotiation messages.
 
 ## Project Structure
 
@@ -11,12 +11,40 @@ The project consists of two main components:
 
 ## Features
 
-- User authentication and profile management
-- Negotiation text analysis with industry-specific models
-- AI-powered improvement suggestions for negotiation text
-- Feedback collection and statistics
-- Secure API key management
-- Data persistence with MongoDB
+- **AI-Powered Text Analysis**: Get comprehensive analysis of your negotiation text with specific feedback on tone, clarity, and persuasiveness.
+- **Performance Scoring**: Receive objective scoring on multiple dimensions of your negotiation approach and track improvements over time.
+- **AI Suggestions**: Get intelligent suggestions to improve your negotiation text, tailored to your specific industry and context.
+- **Industry-Specific Models**: Customized analysis based on your industry, whether it's sales, legal, real estate, or business development.
+- **Secure Processing**: Enterprise-grade security for all your negotiation data with secure API integration.
+- **User Authentication**: Secure login and signup system with JWT authentication.
+- **Comparative Analysis**: Side-by-side comparison of original and improved text with detailed breakdown of enhancements.
+- **User Feedback System**: Rate AI suggestions and improvements to help the system learn and improve over time.
+- **Feedback Statistics**: View aggregated feedback statistics to understand how the AI is learning from user input.
+
+## Recent Updates
+
+### March 2025 Updates
+- **User Authentication System**: Implemented a complete login and signup system with MongoDB Atlas integration.
+- **AI Feedback System**: Integrated a comprehensive feedback system allowing users to rate both analysis results and improved text suggestions.
+- **Feedback Statistics Dashboard**: Added a new page to display aggregated feedback statistics, showcasing how user input helps improve the AI.
+- **Improved Scoring Algorithm**: Enhanced the AI scoring system to ensure meaningful improvements between original and improved text.
+- **Dashboard Enhancements**: Added a new section to the Dashboard that introduces the feedback system and explains its importance to users.
+
+## Technology Stack
+
+### Frontend
+- React with TypeScript
+- Material UI for component design
+- Redux Toolkit for state management
+- Axios for API requests
+- React Router for navigation
+
+### Backend
+- Node.js with Express
+- TypeScript for type safety
+- MongoDB with Mongoose for data persistence
+- JWT for authentication
+- OpenAI API for text analysis
 
 ## Prerequisites
 
@@ -74,7 +102,6 @@ The project consists of two main components:
 3. Create a `.env` file in the frontend directory with the following variables:
    ```
    REACT_APP_API_URL=http://localhost:5001/api
-   REACT_APP_OPENAI_API_KEY=your_openai_api_key
    ```
 
 4. Start the frontend development server:
@@ -127,4 +154,13 @@ The project consists of two main components:
 - `npm start` - Start the development server
 - `npm run build` - Build the production version
 - `npm test` - Run tests
-- `npm run eject` - Eject from Create React App
+
+## Contributing
+
+Contributions are welcome! Please feel free to submit a Pull Request.
+
+1. Fork the repository
+2. Create your feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add some amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request

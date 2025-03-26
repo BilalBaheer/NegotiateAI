@@ -122,7 +122,7 @@ const Dashboard: React.FC = () => {
               lineHeight: 1.6
             }}
           >
-            Enhance your negotiation skills with advanced AI analysis. Get personalized feedback, 
+            Improve your negotiation skills with advanced AI analysis. Get personalized feedback, 
             improve your communication, and achieve better outcomes in any negotiation scenario.
           </Typography>
           

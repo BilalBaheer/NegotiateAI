@@ -30,12 +30,14 @@ import {
 import { AnalysisResult } from '../../services/aiService';
 import { industryModels } from '../../models/industryModels';
 import AnalysisResults from './AnalysisResults';
+import ComparativeAnalysis from './ComparativeAnalysis';
 
 interface AnalysisState {
   currentText: string;
   selectedModelId: string;
   analysisResult: AnalysisResult | null;
   improvedText: string | null;
+  comparativeAnalysis: any | null;
   loading: boolean;
   error: string | null;
 }
@@ -47,6 +49,7 @@ const TextAnalyzer: React.FC = () => {
     selectedModelId, 
     analysisResult, 
     improvedText, 
+    comparativeAnalysis,
     loading, 
     error 
   } = useSelector((state: RootState) => state.analysis as AnalysisState);
@@ -79,6 +82,7 @@ const TextAnalyzer: React.FC = () => {
       return;
     }
     
+    console.log('Improving text with model:', selectedModelId);
     dispatch(getImprovedText({ text: currentText, modelId: selectedModelId }) as any);
   };
   
@@ -119,7 +123,6 @@ const TextAnalyzer: React.FC = () => {
                   label="Industry Model"
                   onChange={handleModelChange}
                 >
-                  <MenuItem value="general">General Negotiations</MenuItem>
                   {industryModels.map((model) => (
                     <MenuItem key={model.id} value={model.id}>
                       {model.name}
@@ -172,51 +175,72 @@ const TextAnalyzer: React.FC = () => {
         </Grid>
         
         <Grid item xs={12} md={6}>
-          {analysisResult ? (
-            <AnalysisResults result={analysisResult} />
-          ) : improvedText ? (
-            <Card elevation={2}>
-              <CardContent>
-                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
-                  <Typography variant="h6">
-                    Improved Text
-                  </Typography>
-                  <Button 
-                    variant="outlined" 
-                    size="small" 
-                    onClick={handleCopyImproved}
-                  >
-                    Copy to Clipboard
-                  </Button>
-                </Box>
-                <Divider sx={{ mb: 2 }} />
-                <Paper 
-                  elevation={0} 
-                  sx={{ 
-                    p: 2, 
-                    bgcolor: 'background.default',
-                    borderRadius: 1,
-                    border: '1px solid',
-                    borderColor: 'divider'
-                  }}
-                >
-                  <Typography variant="body1" sx={{ whiteSpace: 'pre-wrap' }}>
-                    {improvedText}
-                  </Typography>
-                </Paper>
+          {loading ? (
+            <Card elevation={2} sx={{ height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <CardContent sx={{ textAlign: 'center', py: 8 }}>
+                <CircularProgress size={60} thickness={4} />
+                <Typography variant="h6" color="text.secondary" sx={{ mt: 2 }}>
+                  {analysisResult ? 'Improving Text...' : 'Analyzing Text...'}
+                </Typography>
               </CardContent>
             </Card>
           ) : (
-            <Card elevation={2} sx={{ height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <CardContent sx={{ textAlign: 'center', py: 8 }}>
-                <Typography variant="h6" color="text.secondary" gutterBottom>
-                  No Analysis Yet
-                </Typography>
-                <Typography variant="body2" color="text.secondary">
-                  Enter your negotiation text and click "Analyze Text" to receive AI-powered feedback and suggestions.
-                </Typography>
-              </CardContent>
-            </Card>
+            <>
+              {analysisResult && !improvedText && (
+                <AnalysisResults result={analysisResult} />
+              )}
+              
+              {improvedText && (
+                <Card elevation={2}>
+                  <CardContent>
+                    <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
+                      <Typography variant="h6">
+                        Improved Text
+                      </Typography>
+                      <Button 
+                        variant="outlined" 
+                        size="small" 
+                        onClick={handleCopyImproved}
+                      >
+                        Copy to Clipboard
+                      </Button>
+                    </Box>
+                    <Divider sx={{ mb: 2 }} />
+                    <Paper 
+                      elevation={0} 
+                      sx={{ 
+                        p: 2, 
+                        bgcolor: 'background.default',
+                        borderRadius: 1,
+                        border: '1px solid',
+                        borderColor: 'divider'
+                      }}
+                    >
+                      <Typography variant="body1" sx={{ whiteSpace: 'pre-wrap' }}>
+                        {improvedText}
+                      </Typography>
+                    </Paper>
+                    
+                    {comparativeAnalysis && (
+                      <ComparativeAnalysis comparativeData={comparativeAnalysis} />
+                    )}
+                  </CardContent>
+                </Card>
+              )}
+              
+              {!analysisResult && !improvedText && (
+                <Card elevation={2} sx={{ height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  <CardContent sx={{ textAlign: 'center', py: 8 }}>
+                    <Typography variant="h6" color="text.secondary" gutterBottom>
+                      No Analysis Yet
+                    </Typography>
+                    <Typography variant="body2" color="text.secondary">
+                      Enter your negotiation text and click "Analyze Text" to get started.
+                    </Typography>
+                  </CardContent>
+                </Card>
+              )}
+            </>
           )}
         </Grid>
       </Grid>

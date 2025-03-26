@@ -4,7 +4,7 @@
 
 ## Overview
 
-AI Negotiation Coach is an advanced web application designed to help users improve their negotiation skills through AI-powered text analysis. The application provides detailed feedback, scoring, and suggestions to enhance negotiation communications across various industries.
+AI Negotiation Coach is an advanced web application designed to help users improve their negotiation skills through AI-powered text analysis. The application provides detailed feedback, scoring, and suggestions to improve negotiation communications across various industries.
 
 ## Features
 
@@ -13,14 +13,22 @@ AI Negotiation Coach is an advanced web application designed to help users impro
 - **AI Suggestions**: Get intelligent suggestions to improve your negotiation text, tailored to your specific industry and context.
 - **Industry-Specific Models**: Customized analysis based on your industry, whether it's sales, legal, real estate, or business development.
 - **Secure Processing**: Enterprise-grade security for all your negotiation data with secure API integration.
-- **Modern UI**: Sleek, dark-themed interface with intuitive navigation and responsive design.
+- **Optimized Text Improvement**: Fast and efficient text improvement with comparative analysis showing exactly how your text has improved.
+- **Comparative Analysis**: Side-by-side comparison of original and improved text with detailed breakdown of enhancements.
+
+## Recent Updates
+
+### March 2025 Updates
+- **Performance Optimization**: Significantly improved the speed of text analysis and improvement by combining multiple API calls into a single, optimized request.
+- **Enhanced UI**: Improved the display of analysis results and text improvements for better user experience.
+- **Robust Error Handling**: Added comprehensive error handling to ensure reliability even when API calls fail.
+- **Improved State Management**: Improved Redux state management to properly handle analysis results and improved text simultaneously.
 
 ## Technology Stack
 
 - **Frontend**: React, TypeScript, Material-UI
 - **State Management**: Redux Toolkit
 - **API Integration**: OpenAI API for text analysis
-- **Styling**: Material-UI theming with custom dark mode
 
 ## Getting Started
 

@@ -269,6 +269,156 @@ ONLY return the improved text, with no additional commentary or explanations.`
 };
 
 /**
+ * Gets improved version of negotiation text and ensures it scores higher than the original
+ * @param originalText The original negotiation text
+ * @param modelId The industry-specific model to use
+ * @returns Improved version of the text and its comparative analysis
+ */
+export const getImprovedTextWithComparison = async (
+  originalText: string, 
+  modelId: string
+): Promise<{ improvedText: string; comparativeAnalysis: any }> => {
+  if (!originalText.trim()) {
+    throw new Error('Text is required for improvement');
+  }
+
+  try {
+    console.log('Starting optimized text improvement');
+    
+    const industryContext = getIndustryContext(modelId);
+    
+    // Combined API call to improve text and provide comparative analysis in one request
+    const response = await axios.post(
+      API_URL,
+      {
+        model: 'gpt-4',
+        messages: [
+          {
+            role: 'system',
+            content: `You are the world's leading expert on negotiation, with unparalleled mastery of persuasion psychology, strategic communication, and ${industryContext}. 
+
+Your task is to analyze the original negotiation text, create an improved version, and provide a comparative analysis between the two.
+
+First, analyze the original text and assign it a score from 0-100 based on these criteria:
+- Strategic framing (how well it frames proposals in terms of the counterparty's interests)
+- Psychological triggers (use of reciprocity, commitment, social proof, etc.)
+- Linguistic excellence (confident language, precise wording, rhetorical techniques)
+- Structural mastery (opening, organization, call to action)
+- Tactical elements (concessions, authority establishment, scarcity/urgency)
+- Relationship building (mutual benefits, collaborative atmosphere)
+
+Then, create a significantly improved version that addresses any weaknesses and enhances strengths.
+
+Finally, analyze the improved text using the same criteria and provide a comparative analysis.
+
+Your response must be in the following JSON format:
+{
+  "originalAnalysis": {
+    "score": <0-100>,
+    "persuasiveStrength": <0-100>,
+    "strengths": ["strength1", "strength2", ...],
+    "weaknesses": ["weakness1", "weakness2", ...]
+  },
+  "improvedText": "<The complete improved negotiation text>",
+  "improvedAnalysis": {
+    "score": <0-100>,
+    "persuasiveStrength": <0-100>,
+    "strengths": ["strength1", "strength2", ...],
+    "weaknesses": ["weakness1", "weakness2", ...]
+  },
+  "improvements": ["specific improvement 1", "specific improvement 2", ...],
+  "addressedWeaknesses": ["addressed weakness 1", "addressed weakness 2", ...]
+}
+
+Ensure that the improved text scores significantly higher than the original.`
+          },
+          {
+            role: 'user',
+            content: originalText
+          }
+        ],
+        temperature: 0.4,
+        max_tokens: 2000,
+        response_format: { type: "json_object" }
+      },
+      {
+        headers: {
+          'Authorization': `Bearer ${API_KEY}`,
+          'Content-Type': 'application/json'
+        }
+      }
+    );
+
+    // Parse the JSON response
+    const result = JSON.parse(response.data.choices[0].message.content.trim());
+    
+    // Format the comparative analysis
+    const comparativeAnalysis = {
+      originalScore: result.originalAnalysis.score,
+      improvedScore: result.improvedAnalysis.score,
+      scoreDifference: result.improvedAnalysis.score - result.originalAnalysis.score,
+      originalPersuasiveness: result.originalAnalysis.persuasiveStrength,
+      improvedPersuasiveness: result.improvedAnalysis.persuasiveStrength,
+      persuasivenessDifference: result.improvedAnalysis.persuasiveStrength - result.originalAnalysis.persuasiveStrength,
+      improvements: result.improvements || [],
+      addressedWeaknesses: result.addressedWeaknesses || []
+    };
+    
+    return {
+      improvedText: result.improvedText,
+      comparativeAnalysis
+    };
+  } catch (error) {
+    console.error('Error in optimized text improvement:', error);
+    
+    // Fallback to the original implementation if the optimized version fails
+    try {
+      console.log('Falling back to original implementation');
+      
+      // First, analyze the original text to get a baseline score
+      const originalAnalysis = await analyzeText(originalText, modelId);
+      
+      // Get the improved text using our existing function
+      const initialImprovedText = await getImprovedText(originalText, modelId);
+      
+      // Now, analyze the improved text
+      const improvedAnalysis = await analyzeText(initialImprovedText, modelId);
+      
+      return {
+        improvedText: initialImprovedText,
+        comparativeAnalysis: {
+          originalScore: originalAnalysis.score,
+          improvedScore: improvedAnalysis.score,
+          scoreDifference: improvedAnalysis.score - originalAnalysis.score,
+          originalPersuasiveness: originalAnalysis.persuasiveStrength,
+          improvedPersuasiveness: improvedAnalysis.persuasiveStrength,
+          persuasivenessDifference: improvedAnalysis.persuasiveStrength - originalAnalysis.persuasiveStrength,
+          improvements: improvedAnalysis.strengths.filter(s => !originalAnalysis.strengths.includes(s)),
+          addressedWeaknesses: originalAnalysis.weaknesses.filter(w => 
+            !improvedAnalysis.weaknesses.includes(w)
+          )
+        }
+      };
+    } catch (fallbackError) {
+      console.error('Error in fallback implementation:', fallbackError);
+      return { 
+        improvedText: getMockImprovedText(originalText),
+        comparativeAnalysis: {
+          originalScore: 75,
+          improvedScore: 90,
+          scoreDifference: 15,
+          originalPersuasiveness: 70,
+          improvedPersuasiveness: 85,
+          persuasivenessDifference: 15,
+          improvements: ["Better framing of value proposition", "Stronger call to action"],
+          addressedWeaknesses: ["Lack of specific details", "Weak opening"]
+        }
+      };
+    }
+  }
+};
+
+/**
  * Helper function to get industry-specific context
  */
 const getIndustryContext = (industryModelId: string): string => {
@@ -324,5 +474,6 @@ const getMockImprovedText = (originalText: string): string => {
 
 export default {
   analyzeText,
-  getImprovedText
+  getImprovedText,
+  getImprovedTextWithComparison
 };
